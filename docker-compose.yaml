@@ -1,0 +1,27 @@
+version: '3'
+services:
+  reverse-proxy:
+    image: traefik:v2.7
+    container_name: reverse-proxy
+    command:
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  search-engine:
+    image: searxng/searxng
+    container_name: search-engine
+    environment:
+      - SEARXNG_HOSTNAME=search.octosystems.net
+    volumes:
+      - ./searxng/settings.yaml:/etc/searxng/settings.yaml
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.search-engine.rule=Host(`search.octosystems.net`)"
+      - "traefik.http.routers.search-engine.entrypoints=web"
+      - "traefik.http.services.search-engine.loadbalancer.server.port=8080"

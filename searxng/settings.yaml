@@ -1,0 +1,16 @@
+use_default_settings: true
+general:
+  debug: false
+  instance_name:  "Octo-Search"
+  privacypolicy_url: false
+  contact_url: false
+  enable_metrics: false
+search:
+  autocomplete: "google"
+server:
+  method: "GET"
+  secret_key: "dfQlVjPDbnXjpok3kGpMfO2iTQBy2oYL"
+ui:
+  default_theme: simple
+  theme_args:
+    simple_style: dark
