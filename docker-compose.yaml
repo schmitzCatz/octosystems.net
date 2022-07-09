@@ -25,3 +25,14 @@ services:
       - "traefik.http.routers.search-engine.rule=Host(`search.octosystems.net`)"
       - "traefik.http.routers.search-engine.entrypoints=web"
       - "traefik.http.services.search-engine.loadbalancer.server.port=8080"
+  vault-warden:
+    image: vaultwarden/server:latest
+    container_name: vault-warden
+    volumes:
+      - ./vault-warden/data/:/data/
+    environment:
+     - SIGNUPS_DOMAINS_WHITELIST=octosystems.net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vault-warden.rule=Host(`vault.octosystems.net`)"
+      - "traefik.http.routers.vault-warden.entrypoints=web"
