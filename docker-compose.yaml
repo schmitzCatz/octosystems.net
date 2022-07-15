@@ -3,6 +3,7 @@ services:
   reverse-proxy:
     image: traefik:v2.7
     container_name: reverse-proxy
+    restart: unless-stopped
     command:
       - "--api.insecure=false"
       - "--providers.docker=true"
@@ -16,6 +17,9 @@ services:
   search-engine:
     image: searxng/searxng
     container_name: search-engine
+    restart: unless-stopped
+    depends_on:
+      - reverse-proxy
     environment:
       - SEARXNG_HOSTNAME=search.octosystems.net
     volumes:
@@ -28,6 +32,9 @@ services:
   vault-warden:
     image: vaultwarden/server:latest
     container_name: vault-warden
+    restart: unless-stopped
+    depends_on:
+      - reverse-proxy
     volumes:
       - ./vault-warden/data/:/data/
     environment:
@@ -36,3 +43,17 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.vault-warden.rule=Host(`vault.octosystems.net`)"
       - "traefik.http.routers.vault-warden.entrypoints=web"
+  octocraft:
+    image: itzg/minecraft-server
+    container_name: mc-octocraft
+    ports:
+      - 25565:25565
+    volumes:
+      - ./octocraft/data:/data
+    environment:
+      - VERSION=1.18.2
+      - EULA=true
+      - ENFORCE_WHITELIST=true
+      - WHITELIST=7aeac256-75f6-40d3-8e62-14f2dca67099,70c90ff6-46e7-4481-987b-53dd79595a4a
+      - SNOOPER_ENABLED=false
+      - SERVER_NAME=Octocraft
